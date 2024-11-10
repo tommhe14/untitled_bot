@@ -32,4 +32,4 @@ async def loadcogs():
             await bot.load_extension(f'cogs.{files[:-3]}')
 
 # YOUR BOT TOKEN
-bot.run('MTMwNDk0NDI0NzUzMDU5MDIwOA.GB_JvB.BXt7q0o2wnKRtvtapmUxRLjd4akmYykJCE40-Q')
+bot.run(config["token"])
