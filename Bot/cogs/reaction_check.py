@@ -25,7 +25,7 @@ class ReactionCheck(commands.Cog):
     async def handle_action_a(self, channel, message, member):
         select = Select(
             placeholder="Select a channel...",
-            options=[SelectOption(label=ch.name, value=str(ch.id)) for ch in channel.guild.text_channels]
+            options=[SelectOption(label=ch.name, value=str(ch.id)) for ch in channel.guild.text_channels][:25]
         )
         submit_button = Button(label="Submit", style=discord.ButtonStyle.green)
         
@@ -104,7 +104,7 @@ class ReactionCheck(commands.Cog):
             options=[
                 SelectOption(label=channel.name, value=str(channel.id))
                 for channel in guild.text_channels
-            ],
+            ][:25],
         )
         
         async def select_callback(interaction: Interaction):
