@@ -53,7 +53,7 @@ class extra_cmds(commands.Cog):
             inline=False
         )
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     async def send_results(self, ctx, response: str, filename: str):
         """Handles sending the response as a message or a text file if it's too long."""
@@ -75,8 +75,6 @@ class extra_cmds(commands.Cog):
     @commands.command()
     async def search_user(self, ctx, query: str):
         """Search for users whose name contains the query."""
-        await ctx.message.delete()
-
         try:
             guild = ctx.guild
             members = guild.members
@@ -103,7 +101,6 @@ class extra_cmds(commands.Cog):
         - Find all users whose name contains "bot": `!search_wildcard *bot*`
         - Find all users whose name is exactly 5 characters long and starts with "A": `!search_wildcard A????`
         """
-        await ctx.message.delete()
 
         try:
             pattern_regex = re.escape(query).replace("\\*", ".*").replace("\\?", ".")
@@ -126,7 +123,6 @@ class extra_cmds(commands.Cog):
     @commands.command()
     async def export_users(self, ctx):
         """Export all users in the server to a CSV file."""
-        await ctx.message.delete()
         try:
             guild = ctx.guild
             members = guild.members
