@@ -55,6 +55,23 @@ class extra_cmds(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    async def send_results(self, ctx, response: str, filename: str):
+        """Handles sending the response as a message or a text file if it's too long."""
+        try:
+            if len(response) <= 2000:  
+                await ctx.reply(response)
+            else:
+                with open(filename, "w", encoding="utf-8") as file:
+                    file.write(response)
+                await ctx.reply(
+                    "The results were too long to send in a message. Here is a text file instead:",
+                    file=discord.File(filename)
+                )
+                os.remove(filename)  
+        except Exception as e:
+            logging.error(f"Error sending message: {e}", exc_info=True)
+            await ctx.reply("An error occurred while sending the results. Please try again later.")
+
     @commands.command()
     async def search_user(self, ctx, query: str):
         """Search for users whose name contains the query."""
@@ -65,12 +82,12 @@ class extra_cmds(commands.Cog):
             members = guild.members
             found_users = [member.name for member in members if query.lower() in member.name.lower()]
 
-            if found_users:
-                response = "Users Found:\n" + "\n".join(found_users)
-            else:
-                response = f"No users found matching '{query}'"
+            response = (
+                "Users Found:\n" + "\n".join(found_users) if found_users 
+                else f"No users found matching '{query}'"
+            )
 
-            await ctx.reply(response)
+            await self.send_results(ctx, response, "user_search_results.txt")
         except Exception as e:
             logging.error(f"Error in search_user: {e}", exc_info=True)
             await ctx.reply("An error occurred while searching. Please try again later.")
@@ -80,17 +97,11 @@ class extra_cmds(commands.Cog):
         """
         Search for users using wildcard patterns (* for any characters, ? for a single character).
 
-        Find all users whose name starts with "John"
-        !search_wildcard John*
-
-        Find all users whose name ends with "Smith"
-        !search_wildcard *Smith
-        
-        Find all users whose name contains "bot"
-        !search_wildcard *bot*
-
-        Find all users whose name is exactly 5 characters long and starts with "A"
-        !search_wildcard A????
+        Examples:
+        - Find all users whose name starts with "John": `!search_wildcard John*`
+        - Find all users whose name ends with "Smith": `!search_wildcard *Smith`
+        - Find all users whose name contains "bot": `!search_wildcard *bot*`
+        - Find all users whose name is exactly 5 characters long and starts with "A": `!search_wildcard A????`
         """
         await ctx.message.delete()
 
@@ -102,12 +113,12 @@ class extra_cmds(commands.Cog):
             members = guild.members
             found_users = [member.name for member in members if regex.match(member.name)]
 
-            if found_users:
-                response = "Users Found:\n" + "\n".join(found_users)
-            else:
-                response = f"No users found matching '{query}'"
+            response = (
+                "Users Found:\n" + "\n".join(found_users) if found_users 
+                else f"No users found matching '{query}'"
+            )
 
-            await ctx.reply(response)
+            await self.send_results(ctx, response, "wildcard_search_results.txt")
         except Exception as e:
             logging.error(f"Error in search_wildcard: {e}", exc_info=True)
             await ctx.reply("An error occurred while searching. Please try again later.")
